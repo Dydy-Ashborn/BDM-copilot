@@ -1,0 +1,24 @@
+{
+  "name": "la-boucherie-des-montagnes",
+  "version": "1.0.0",
+  "description": "PWA de gestion des commandes pour La Boucherie des Montagnes",
+  "scripts": {
+    "start": "http-server -p 8080 -c-1",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore",
+    "serve": "firebase serve"
+  },
+  "keywords": [
+    "pwa",
+    "boucherie",
+    "commandes",
+    "firebase"
+  ],
+  "author": "La Boucherie des Montagnes",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "firebase-tools": "^13.0.0"
+  }
+}

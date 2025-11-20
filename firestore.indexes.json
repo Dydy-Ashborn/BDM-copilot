@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "commandes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "dateLivraison",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "heureLivraison",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

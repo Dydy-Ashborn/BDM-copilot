@@ -1,0 +1,33 @@
+{
+  "name": "La Boucherie des Montagnes",
+  "short_name": "BDM",
+  "description": "Gestion des commandes de La Boucherie des Montagnes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F8F8",
+  "theme_color": "#E63946",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "Header.jpg",
+      "sizes": "1500x400",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "fr-FR"
+}
