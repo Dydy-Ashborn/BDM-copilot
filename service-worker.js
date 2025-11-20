@@ -1,12 +1,12 @@
 const CACHE_NAME = 'bdm-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.jsx',
-  '/manifest.json',
-  '/Logo.png',
-  '/Header.jpg',
+  '/BDM-copilot/',
+  '/BDM-copilot/index.html',
+  '/BDM-copilot/styles.css',
+  '/BDM-copilot/app.jsx',
+  '/BDM-copilot/manifest.json',
+  '/BDM-copilot/Logo.png',
+  '/BDM-copilot/Header.jpg',
   'https://unpkg.com/react@18/umd/react.production.min.js',
   'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
   'https://unpkg.com/@babel/standalone/babel.min.js',
@@ -74,7 +74,7 @@ self.addEventListener('fetch', event => {
             
             // Si pas dans le cache, retourner une page offline basique
             if (event.request.destination === 'document') {
-              return caches.match('/index.html');
+              return caches.match('/BDM-copilot/index.html');
             }
           });
       })
