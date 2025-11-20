@@ -302,6 +302,7 @@ const App = () => {
     const [availableCategories, setAvailableCategories] = useState([]);
     const [toast, setToast] = useState(null);
     const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [showSafariInstallPrompt, setShowSafariInstallPrompt] = useState(false);
     
     // Charger les commandes
     useEffect(() => {
@@ -333,6 +334,24 @@ const App = () => {
         
         window.addEventListener('beforeinstallprompt', handler);
         
+        // Détecter Safari et afficher la popup d'instructions
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+        
+        // Afficher la popup seulement si :
+        // - C'est Safari ou iOS
+        // - L'app n'est pas déjà installée
+        // - L'utilisateur n'a pas déjà fermé la popup (localStorage)
+        if ((isSafari || isIOS) && !isStandalone) {
+            const hasSeenPrompt = localStorage.getItem('safariInstallPromptSeen');
+            if (!hasSeenPrompt) {
+                setTimeout(() => {
+                    setShowSafariInstallPrompt(true);
+                }, 2000); // Attendre 2 secondes avant d'afficher
+            }
+        }
+        
         return () => window.removeEventListener('beforeinstallprompt', handler);
     }, []);
     
@@ -347,6 +366,15 @@ const App = () => {
         }
         
         setDeferredPrompt(null);
+    };
+    
+    const handleCloseSafariPrompt = () => {
+        setShowSafariInstallPrompt(false);
+        localStorage.setItem('safariInstallPromptSeen', 'true');
+    };
+    
+    const handleShowSafariInstructions = () => {
+        setShowSafariInstallPrompt(true);
     };
     
     // Appliquer les filtres
@@ -516,6 +544,11 @@ const App = () => {
                     {deferredPrompt && (
                         <button className="btn btn-install" onClick={handleInstallClick}>
                             📱 Installer l'application
+                        </button>
+                    )}
+                    {!deferredPrompt && /^((?!chrome|android).)*safari/i.test(navigator.userAgent) && !window.navigator.standalone && !window.matchMedia('(display-mode: standalone)').matches && (
+                        <button className="btn btn-install" onClick={handleShowSafariInstructions}>
+                            📱 Comment installer l'app ?
                         </button>
                     )}
                 </div>
@@ -708,6 +741,78 @@ const App = () => {
                     type={toast.type}
                     onClose={() => setToast(null)}
                 />
+            )}
+            
+            {/* Popup d'instructions pour Safari */}
+            {showSafariInstallPrompt && (
+                <div className="modal-overlay" onClick={handleCloseSafariPrompt}>
+                    <div className="safari-install-prompt" onClick={e => e.stopPropagation()}>
+                        <button className="modal-close" onClick={handleCloseSafariPrompt}>&times;</button>
+                        
+                        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>📱</div>
+                            <h2 style={{ color: 'var(--rouge-principal)', marginBottom: '0.5rem' }}>
+                                Installer l'application
+                            </h2>
+                            <p style={{ color: 'var(--gris-fonce)', fontSize: '0.875rem' }}>
+                                Accédez rapidement à vos commandes !
+                            </p>
+                        </div>
+                        
+                        <div className="safari-instructions">
+                            <div className="safari-step">
+                                <div className="safari-step-number">1</div>
+                                <div className="safari-step-content">
+                                    <strong>Appuyez sur le bouton Partager</strong>
+                                    <div style={{ fontSize: '2rem', margin: '0.5rem 0' }}>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            padding: '0.5rem 1rem', 
+                                            background: '#007AFF', 
+                                            color: 'white', 
+                                            borderRadius: '8px',
+                                            fontSize: '1.5rem'
+                                        }}>↑</span>
+                                    </div>
+                                    <small style={{ color: 'var(--gris-fonce)' }}>
+                                        En bas de l'écran (iPhone) ou dans la barre d'outils (Mac)
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div className="safari-step">
+                                <div className="safari-step-number">2</div>
+                                <div className="safari-step-content">
+                                    <strong>Sélectionnez "Sur l'écran d'accueil"</strong>
+                                    <div style={{ margin: '0.5rem 0', color: 'var(--gris-fonce)' }}>
+                                        📱 Sur l'écran d'accueil
+                                    </div>
+                                    <small style={{ color: 'var(--gris-fonce)' }}>
+                                        Ou "Ajouter au Dock" sur Mac
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div className="safari-step">
+                                <div className="safari-step-number">3</div>
+                                <div className="safari-step-content">
+                                    <strong>Appuyez sur "Ajouter"</strong>
+                                    <div style={{ margin: '0.5rem 0', color: 'var(--gris-fonce)' }}>
+                                        ✅ L'app apparaîtra sur votre écran d'accueil
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            className="btn btn-primary" 
+                            onClick={handleCloseSafariPrompt}
+                            style={{ width: '100%', marginTop: '1.5rem' }}
+                        >
+                            J'ai compris !
+                        </button>
+                    </div>
+                </div>
             )}
         </>
     );
