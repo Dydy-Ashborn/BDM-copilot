@@ -512,111 +512,7 @@ const App = () => {
     };
     
     const handlePrint = () => {
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        
-        if (isSafari) {
-            // Sur Safari, générer un PDF téléchargeable
-            generatePDF();
-        } else {
-            // Sur les autres navigateurs, utiliser window.print()
-            window.print();
-        }
-    };
-    
-    const generatePDF = () => {
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Titre
-            doc.setFontSize(18);
-            doc.setTextColor(230, 57, 70); // Rouge BDM
-            doc.text('La Boucherie des Montagnes', 105, 20, { align: 'center' });
-            
-            doc.setFontSize(12);
-            doc.setTextColor(74, 74, 74); // Gris
-            doc.text('Liste des Commandes', 105, 28, { align: 'center' });
-            
-            // Date du document
-            const today = new Date().toLocaleDateString('fr-FR');
-            doc.setFontSize(9);
-            doc.text(`Généré le ${today}`, 105, 35, { align: 'center' });
-            
-            let yPos = 45;
-            
-            // Parcourir les commandes
-            filteredCommandes.forEach((commande, index) => {
-                // Vérifier si on a besoin d'une nouvelle page
-                if (yPos > 250) {
-                    doc.addPage();
-                    yPos = 20;
-                }
-                
-                // Numéro de commande
-                doc.setFontSize(12);
-                doc.setTextColor(230, 57, 70);
-                doc.text(`Commande #${commande.numeroCommande || '---'}`, 15, yPos);
-                
-                yPos += 7;
-                
-                // Client
-                doc.setFontSize(10);
-                doc.setTextColor(0, 0, 0);
-                doc.setFont(undefined, 'bold');
-                doc.text(`Client: ${commande.nomClient}`, 15, yPos);
-                
-                yPos += 6;
-                
-                // Téléphone
-                doc.setFont(undefined, 'normal');
-                doc.text(`Tél: ${commande.telephone}`, 15, yPos);
-                
-                yPos += 6;
-                
-                // Date et heure
-                doc.text(`Livraison: ${formatDate(commande.dateLivraison)} à ${commande.heureLivraison}`, 15, yPos);
-                
-                yPos += 6;
-                
-                // Catégories
-                if (commande.categories && commande.categories.length > 0) {
-                    doc.text(`Catégories: ${commande.categories.join(', ')}`, 15, yPos);
-                    yPos += 6;
-                }
-                
-                // Contenu
-                doc.setFont(undefined, 'bold');
-                doc.text('Contenu:', 15, yPos);
-                doc.setFont(undefined, 'normal');
-                yPos += 6;
-                
-                // Découper le contenu en lignes si trop long
-                const contenuLines = doc.splitTextToSize(commande.contenuCommande, 170);
-                contenuLines.forEach(line => {
-                    if (yPos > 270) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-                    doc.text(line, 20, yPos);
-                    yPos += 5;
-                });
-                
-                // Ligne de séparation
-                yPos += 3;
-                doc.setDrawColor(200, 200, 200);
-                doc.line(15, yPos, 195, yPos);
-                yPos += 8;
-            });
-            
-            // Sauvegarder le PDF
-            const filename = `commandes_${new Date().toISOString().split('T')[0]}.pdf`;
-            doc.save(filename);
-            
-            showToast('PDF téléchargé avec succès!', 'success');
-        } catch (error) {
-            console.error('Erreur PDF:', error);
-            showToast('Erreur lors de la génération du PDF', 'error');
-        }
+        window.print();
     };
     
     if (loading) {
@@ -640,7 +536,7 @@ const App = () => {
                         ➕ Nouvelle Commande
                     </button>
                     <button className="btn btn-secondary" onClick={handlePrint}>
-                        {/^((?!chrome|android).)*safari/i.test(navigator.userAgent) ? '📄 Générer PDF' : '🖨️ Imprimer'}
+                        🖨️ Imprimer
                     </button>
                     <button className="btn btn-secondary" onClick={handleDeleteOldCommandes} style={{ background: '#D32F2F' }}>
                         🗑️ Supprimer anciennes commandes
