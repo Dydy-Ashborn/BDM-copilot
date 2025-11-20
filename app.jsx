@@ -512,7 +512,43 @@ const App = () => {
     };
     
     const handlePrint = () => {
-        window.print();
+        // Détecter si on est sur mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Sur mobile, proposer de partager ou d'exporter
+            if (navigator.share) {
+                // Créer un résumé textuel des commandes
+                const commandesText = filteredCommandes.map(cmd => 
+                    `Commande #${cmd.numeroCommande || '---'}\n` +
+                    `Client: ${cmd.nomClient}\n` +
+                    `Tél: ${cmd.telephone}\n` +
+                    `Date: ${formatDate(cmd.dateLivraison)} à ${cmd.heureLivraison}\n` +
+                    `Catégories: ${cmd.categories ? cmd.categories.join(', ') : ''}\n` +
+                    `Contenu: ${cmd.contenuCommande}\n` +
+                    `-------------------`
+                ).join('\n\n');
+                
+                navigator.share({
+                    title: 'Commandes - La Boucherie des Montagnes',
+                    text: commandesText
+                }).catch(err => console.log('Partage annulé'));
+            } else {
+                // Fallback: copier dans le presse-papier
+                const commandesText = filteredCommandes.map(cmd => 
+                    `#${cmd.numeroCommande || '---'} - ${cmd.nomClient} - ${formatDate(cmd.dateLivraison)}`
+                ).join('\n');
+                
+                navigator.clipboard.writeText(commandesText).then(() => {
+                    showToast('Liste copiée dans le presse-papier!', 'success');
+                }).catch(() => {
+                    showToast('Impossible de copier', 'error');
+                });
+            }
+        } else {
+            // Sur desktop, impression normale
+            window.print();
+        }
     };
     
     if (loading) {
@@ -536,7 +572,7 @@ const App = () => {
                         ➕ Nouvelle Commande
                     </button>
                     <button className="btn btn-secondary" onClick={handlePrint}>
-                        🖨️ Imprimer
+                        {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '📤 Partager' : '🖨️ Imprimer'}
                     </button>
                     <button className="btn btn-secondary" onClick={handleDeleteOldCommandes} style={{ background: '#D32F2F' }}>
                         🗑️ Supprimer anciennes commandes
