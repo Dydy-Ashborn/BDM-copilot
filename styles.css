@@ -542,24 +542,91 @@ tbody tr:hover {
 
 /* Print styles */
 @media print {
-    .header,
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
     .action-buttons,
     .filters,
-    .action-btns {
+    .modal-overlay,
+    .toast,
+    .safari-install-prompt {
         display: none !important;
+    }
+    
+    .header {
+        position: static !important;
+        page-break-after: avoid;
     }
     
     .container {
         margin: 0;
         padding: 0;
+        max-width: 100%;
     }
     
     .table-container {
         box-shadow: none;
+        page-break-inside: avoid;
     }
     
-    tbody tr:hover {
-        background-color: transparent;
+    /* Cacher le tableau et afficher les cartes sur mobile en print */
+    @media (max-width: 768px) {
+        table {
+            display: none !important;
+        }
+        
+        .commande-card {
+            page-break-inside: avoid;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+        }
+    }
+    
+    /* Afficher le tableau sur desktop en print */
+    @media (min-width: 769px) {
+        .commande-card {
+            display: none !important;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        thead {
+            background: #E63946 !important;
+            color: white !important;
+        }
+        
+        tbody tr {
+            page-break-inside: avoid;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9 !important;
+        }
+    }
+    
+    .categories-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    
+    .badge {
+        page-break-inside: avoid;
     }
 }
 
