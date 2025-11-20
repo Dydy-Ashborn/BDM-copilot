@@ -555,7 +555,10 @@ tbody tr:hover {
     .filters,
     .modal-overlay,
     .toast,
-    .safari-install-prompt {
+    .safari-install-prompt,
+    .action-btns,
+    .commande-card-actions,
+    .btn-icon {
         display: none !important;
     }
     
@@ -585,6 +588,7 @@ tbody tr:hover {
             page-break-inside: avoid;
             margin-bottom: 1rem;
             border: 1px solid #ddd;
+            background: white !important;
         }
     }
     
@@ -603,6 +607,12 @@ tbody tr:hover {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
+        }
+        
+        /* Cacher la colonne Actions */
+        th:last-child,
+        td:last-child {
+            display: none !important;
         }
         
         thead {
@@ -627,6 +637,15 @@ tbody tr:hover {
     
     .badge {
         page-break-inside: avoid;
+    }
+    
+    /* Améliorer la lisibilité */
+    .commande-card-header h3 {
+        font-size: 1.2rem !important;
+    }
+    
+    .commande-card-label {
+        font-weight: bold !important;
     }
 }
 
