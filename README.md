@@ -32,76 +32,6 @@ Vous pouvez également ajouter ou retirer des catégories manuellement.
 - Logo et header de l'entreprise
 - Interface moderne et intuitive
 
-## 🔧 Installation
-
-### 1. Hébergement
-Hébergez les fichiers sur un serveur web avec HTTPS (obligatoire pour les PWA).
-
-Options d'hébergement gratuites :
-- **Firebase Hosting** (recommandé)
-- **Netlify**
-- **Vercel**
-- **GitHub Pages**
-
-### 2. Configuration Firebase
-
-#### Base de données Firestore
-1. Allez sur https://console.firebase.google.com
-2. Sélectionnez votre projet `bdm-copilot`
-3. Créez une base de données Firestore en mode Production
-4. Configurez les règles de sécurité :
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /commandes/{commandeId} {
-      allow read, write: if true;
-    }
-  }
-}
-```
-
-**Note** : Ces règles permettent l'accès public. Pour plus de sécurité, ajoutez Firebase Authentication.
-
-### 3. Déploiement avec Firebase Hosting
-
-```bash
-# Installer Firebase CLI
-npm install -g firebase-tools
-
-# Se connecter
-firebase login
-
-# Initialiser le projet
-firebase init
-
-# Sélectionnez :
-# - Hosting
-# - Firestore (si pas déjà fait)
-# - Project: bdm-copilot
-
-# Déployer
-firebase deploy
-```
-
-## 📊 Structure de la base de données
-
-### Collection `commandes`
-```javascript
-{
-  id: "auto-generated",
-  nomClient: "string",
-  telephone: "string (10 chiffres)",
-  dateLivraison: "string (YYYY-MM-DD)",
-  heureLivraison: "string (HH:MM)",
-  contenuCommande: "string",
-  categories: ["Boeuf", "Porc", ...],
-  createdAt: timestamp,
-  updatedAt: timestamp
-}
-```
-
 ## 🎯 Utilisation
 
 ### Ajouter une commande
@@ -133,24 +63,6 @@ Cliquez sur "Imprimer" pour générer une version imprimable du tableau.
 2. Ou cliquez sur "Installer l'application"
 3. L'app sera disponible comme une application native
 
-## 🔐 Sécurité (optionnel)
-
-Pour ajouter une authentification :
-
-1. Activez Firebase Authentication
-2. Modifiez les règles Firestore :
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /commandes/{commandeId} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
-3. Ajoutez le code d'authentification dans l'app
 
 ## 📱 Compatibilité
 
@@ -158,21 +70,6 @@ service cloud.firestore {
 - ✅ Safari (iOS/macOS)
 - ✅ Firefox
 - ✅ Samsung Internet
-
-## 🎨 Personnalisation
-
-### Couleurs
-Modifiez les variables CSS dans `styles.css` :
-```css
-:root {
-    --rouge-principal: #E63946;
-    --gris-fonce: #4A4A4A;
-    --gris-clair: #F8F8F8;
-}
-```
-
-### Catégories
-Modifiez la fonction `detectCategories` dans `app.jsx` pour ajouter des mots-clés.
 
 ## 🐛 Débogage
 
@@ -192,18 +89,5 @@ Pour toute question, vérifiez :
 1. La console du navigateur (F12)
 2. L'onglet Network pour les erreurs de chargement
 3. L'onglet Application > Service Workers
-
-## 🚀 Améliorations futures possibles
-
-- [ ] Authentification utilisateur
-- [ ] Notifications push pour les livraisons
-- [ ] Export Excel/PDF
-- [ ] Statistiques et dashboard
-- [ ] Vue calendrier
-- [ ] Historique client
-- [ ] Mode sombre
-- [ ] Multilingue
-
----
 
 Développé avec ❤️ pour La Boucherie des Montagnes
