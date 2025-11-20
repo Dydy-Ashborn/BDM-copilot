@@ -1,15 +1,25 @@
-const CACHE_NAME = 'bdm-v1';
+const CACHE_NAME = 'bdm-v2';
+
+// Utiliser l'URL de base du service worker pour les chemins relatifs
+const getBaseUrl = () => {
+  const url = new URL('./', self.location);
+  return url.pathname;
+};
+
+const baseUrl = getBaseUrl();
+
 const urlsToCache = [
-  '/BDM-copilot/',
-  '/BDM-copilot/index.html',
-  '/BDM-copilot/styles.css',
-  '/BDM-copilot/app.jsx',
-  '/BDM-copilot/manifest.json',
-  '/BDM-copilot/Logo.png',
-  '/BDM-copilot/Header.jpg',
+  `${baseUrl}`,
+  `${baseUrl}index.html`,
+  `${baseUrl}styles.css`,
+  `${baseUrl}app.jsx`,
+  `${baseUrl}manifest.json`,
+  `${baseUrl}Logo.png`,
+  `${baseUrl}Header.jpg`,
   'https://unpkg.com/react@18/umd/react.production.min.js',
   'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
   'https://unpkg.com/@babel/standalone/babel.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js'
 ];
@@ -74,7 +84,7 @@ self.addEventListener('fetch', event => {
             
             // Si pas dans le cache, retourner une page offline basique
             if (event.request.destination === 'document') {
-              return caches.match('/BDM-copilot/index.html');
+              return caches.match(`${baseUrl}index.html`);
             }
           });
       })

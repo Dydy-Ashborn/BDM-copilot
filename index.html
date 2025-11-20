@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#E63946">
     <meta name="description" content="Gestion des commandes - La Boucherie des Montagnes">
-    <base href="/BDM-copilot/">
     <title>La Boucherie des Montagnes</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     
     <!-- Icons -->
-    <link rel="icon" type="image/png" href="Logo.png">
-    <link rel="apple-touch-icon" href="Logo.png">
+    <link rel="icon" type="image/png" href="./Logo.png">
+    <link rel="apple-touch-icon" href="./Logo.png">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./styles.css">
     
     <!-- React et Babel -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -33,13 +32,13 @@
 <body>
     <div id="root"></div>
     
-    <script type="text/babel" src="app.jsx"></script>
+    <script type="text/babel" src="./app.jsx"></script>
     
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                navigator.serviceWorker.register('./service-worker.js')
                     .then(registration => console.log('SW registered:', registration))
                     .catch(err => console.log('SW registration failed:', err));
             });
