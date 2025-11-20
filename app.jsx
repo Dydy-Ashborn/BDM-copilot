@@ -512,7 +512,136 @@ const App = () => {
     };
     
     const handlePrint = () => {
-        window.print();
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        
+        if (isSafari) {
+            generatePrintPDF();
+        } else {
+            window.print();
+        }
+    };
+    
+    const generatePrintPDF = async () => {
+        try {
+            showToast('Génération du PDF en cours...', 'success');
+            
+            // Créer un clone de la page pour l'impression
+            const printContainer = document.createElement('div');
+            printContainer.style.position = 'absolute';
+            printContainer.style.left = '-9999px';
+            printContainer.style.top = '0';
+            printContainer.style.width = '210mm'; // A4 width
+            printContainer.style.background = 'white';
+            printContainer.style.padding = '10mm';
+            document.body.appendChild(printContainer);
+            
+            // Ajouter le header
+            const header = document.querySelector('.header').cloneNode(true);
+            printContainer.appendChild(header);
+            
+            // Déterminer si on est sur mobile ou desktop
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Sur mobile, cloner toutes les cartes
+                filteredCommandes.forEach(commande => {
+                    const card = document.createElement('div');
+                    card.className = 'commande-card';
+                    card.style.pageBreakInside = 'avoid';
+                    card.style.marginBottom = '1rem';
+                    card.style.border = '1px solid #ddd';
+                    card.style.borderLeft = '4px solid #E63946';
+                    card.style.padding = '1rem';
+                    card.style.borderRadius = '12px';
+                    card.style.background = 'white';
+                    
+                    card.innerHTML = `
+                        <div style="margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #E0E0E0;">
+                            <div style="font-size: 0.875rem; color: #4A4A4A; margin-bottom: 0.25rem;">
+                                Commande #${commande.numeroCommande || '---'}
+                            </div>
+                            <h3 style="margin: 0; color: #E63946; font-size: 1.1rem;">${commande.nomClient}</h3>
+                            <div style="color: #E63946; font-weight: bold; margin-top: 0.25rem;">
+                                📞 ${commande.telephone}
+                            </div>
+                        </div>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex;">
+                                <span style="font-weight: 600; color: #4A4A4A; min-width: 100px; font-size: 0.875rem;">📅 Date :</span>
+                                <span>${formatDate(commande.dateLivraison)}</span>
+                            </div>
+                            <div style="display: flex;">
+                                <span style="font-weight: 600; color: #4A4A4A; min-width: 100px; font-size: 0.875rem;">🕐 Heure :</span>
+                                <span>${commande.heureLivraison}</span>
+                            </div>
+                            <div style="display: flex;">
+                                <span style="font-weight: 600; color: #4A4A4A; min-width: 100px; font-size: 0.875rem;">🥩 Catégories :</span>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                    ${commande.categories ? commande.categories.map(cat => 
+                                        `<span class="badge badge-${cat.toLowerCase()}" style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">${cat}</span>`
+                                    ).join('') : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; margin-top: 0.5rem;">
+                                <span style="font-weight: 600; color: #4A4A4A; min-width: 100px; font-size: 0.875rem;">📝 Contenu :</span>
+                                <span style="white-space: pre-wrap; flex: 1;">${commande.contenuCommande}</span>
+                            </div>
+                        </div>
+                    `;
+                    printContainer.appendChild(card);
+                });
+            } else {
+                // Sur desktop, cloner le tableau
+                const table = document.querySelector('table').cloneNode(true);
+                // Supprimer la dernière colonne (Actions)
+                table.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
+                printContainer.appendChild(table);
+            }
+            
+            // Capturer avec html2canvas
+            const canvas = await html2canvas(printContainer, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+            
+            // Nettoyer
+            document.body.removeChild(printContainer);
+            
+            // Créer le PDF
+            const { jsPDF } = window.jspdf;
+            const imgData = canvas.toDataURL('image/png');
+            
+            const imgWidth = 210; // A4 width in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            let position = 0;
+            const pageHeight = 297; // A4 height in mm
+            
+            if (imgHeight > pageHeight) {
+                // Si l'image est plus grande qu'une page, la découper
+                while (position < imgHeight) {
+                    pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
+                    position += pageHeight;
+                    if (position < imgHeight) {
+                        pdf.addPage();
+                    }
+                }
+            } else {
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            }
+            
+            // Sauvegarder
+            const filename = `commandes_${new Date().toISOString().split('T')[0]}.pdf`;
+            pdf.save(filename);
+            
+            showToast('PDF téléchargé avec succès!', 'success');
+        } catch (error) {
+            console.error('Erreur PDF:', error);
+            showToast('Erreur lors de la génération du PDF', 'error');
+        }
     };
     
     if (loading) {
@@ -536,7 +665,7 @@ const App = () => {
                         ➕ Nouvelle Commande
                     </button>
                     <button className="btn btn-secondary" onClick={handlePrint}>
-                        🖨️ Imprimer
+                        {/^((?!chrome|android).)*safari/i.test(navigator.userAgent) ? '📄 Télécharger PDF' : '🖨️ Imprimer'}
                     </button>
                     <button className="btn btn-secondary" onClick={handleDeleteOldCommandes} style={{ background: '#D32F2F' }}>
                         🗑️ Supprimer anciennes commandes
